@@ -27,7 +27,12 @@ typedef enum
 // Definition of coordinates on the game board name as in ADA_Othello
 typedef struct { uint8_t row; uint8_t col; } Position;
 
+// Creates an empty board
+void board_init_start(Board* b);
 
-// We're going to need a function that checks
+//TEMP
+bool board_place_if_empty(Board* b, uint8_t row, uint8_t col, Cell piece);
+
+
 
 #endif //LOGIC_H
