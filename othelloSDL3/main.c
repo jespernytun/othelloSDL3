@@ -12,10 +12,15 @@
 static Board g_board;
 static Tile g_tiles[8][8];
 static Player g_player = PLAYER_BLACK; // Black statrs the game
+static uint8_t g_flips = 0;
 
 // definitions
 SDL_Window* window;
 SDL_Renderer* renderer;
+
+static const Direction DIRS[8] = {
+	DIR_N, DIR_NE, DIR_E, DIR_SE, DIR_S, DIR_SW, DIR_W, DIR_NW
+};
 
 
 // This first function will initialize the window where we will make our window
@@ -58,7 +63,6 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char **argv)
 				tile, tile, r, c);
 		}
 	}
-
 	return SDL_APP_CONTINUE;
 }
 
@@ -82,13 +86,38 @@ SDL_AppResult SDL_AppEvent(void* appstate, SDL_Event* event)
 				if (tile_hit_test(&g_tiles[r][c], mx, my)) {
 					// Intermediary check to see what player is currently playing
 					Cell piece = (g_player == PLAYER_WHITE) ? CELL_WHITE : CELL_BLACK;
-					if (board_place_if_empty(&g_board, (uint8_t)r, (uint8_t)c, piece)) {      // check if tile is empty
-						g_player = (g_player == PLAYER_WHITE) ? PLAYER_BLACK : PLAYER_WHITE; // If white then black, else white
+
+					// Check if tile is occupied
+					if (g_board.cell[r][c] != CELL_EMPTY) {
+						SDL_Log("(%d,%d) occupied", r, c);
+						goto end; // stop the search before we waste my memory
 					}
-				}
+
+					// Now we check legalty of move in all directions
+					uint8_t total_flips = 0; // We use this to check if a direction is legal
+					for (int i = 0; i < 8; ++i)
+					{
+						uint8_t flips = 0;
+						Direction d = DIRS[i];
+						if (test_direction_legal(&g_board, (uint8_t)r, (uint8_t)c, piece, d, &flips) && flips > 0)
+						{
+							SDL_Log("Legal %d,%d dir=%d flips=%u", r, c, (int)d, flips);
+							// We add flips to the counter
+							total_flips += turn_pieces_direction(&g_board, (uint8_t)r, (uint8_t)c, piece, d); // We turn the pieces
+						}
+					}
+					// Check if indeed legal
+					if (total_flips > 0) {
+						// Legal confirmed
+						g_board.cell[r][c] = piece; // We place the piece piece on the board
+						g_player = (g_player == PLAYER_WHITE) ? PLAYER_BLACK : PLAYER_WHITE; // We change turns
+					}
+					// else goto end;
+				}   
 			}
 		}
 	}
+	end:
 	return SDL_APP_CONTINUE;  // Else, we continue
 }
 
