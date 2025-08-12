@@ -4,16 +4,30 @@
 #define LOGIC_H
 #include <stdio.h>
 #include <stdbool.h>
+#include <stdint.h>
 
-typedef struct // We define a struct that will act as the board
+ // We define a struct that will act as the board
+typedef struct { uint8_t cell[8][8]; } Board;
+
+// Types of cells that we can find on our board
+typedef enum { CELL_WHITE = 0, CELL_BLACK = 1, CELL_EMPTY = 2 } Cell;
+
+// Definition of players
+typedef enum { PLAYER_WHITE = 1, PLAYER_BLACK = 2 } Player;
+
+// Definition of gamestates
+typedef enum
 {
-	uint8_t cell[8][8]; 
-} Board;
+	RESULT_ONGOING = 0,
+	RESULT_WHITE_WINS = 1,
+	RESULT_BLACK_WINS = 2,
+	RESULT_DRAW = 3,
+} GameResult;
 
-// We define the different types of content that can be contained in a cell on our board
-typedef enum {CELL_WHITE = 0, CELL_BLACK = 1, CELL_EMPTY = 2} Cell;
+// Definition of coordinates on the game board name as in ADA_Othello
+typedef struct { uint8_t row; uint8_t col; } Position;
 
-// We define the game_init and game_reset functions for later
-void game_init(Board* g);
-void game_reset(Board* g);
-// We point towards to the game to make sure that we edit the actual game board in memory
+
+// We're going to need a function that checks
+
+#endif //LOGIC_H
