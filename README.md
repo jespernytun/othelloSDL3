@@ -9,6 +9,7 @@ I still haven't made a win condition
 - figure out how to make a menu
 - make a single player version versus a bot
 - then figure out how to make the bot competent???
+- Make a README
 
  # HOW TO RUN
  You need to add the SDL3.dll into the same folder as the .exe file <br>
